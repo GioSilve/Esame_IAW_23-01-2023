@@ -1,0 +1,128 @@
+{% from 'bootstrap5/utils.html' import render_messages %}
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="YouTalk is a free web platform to share and listen to your favourite podcasts.">
+        <meta name="keywords" content="podcasts, platform, web">
+        <meta name="author" content="Giorgio Silvestre">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>YouTalk {% block title %}{% endblock %}</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap">
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico/') }}">
+        <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+        <script defer src="{{ url_for('static', filename='app.js') }}"></script>
+    </head>
+    <body>
+        <header>
+            <nav class="navbar fixed-top navbar-expand-lg">
+                <div class="container-fluid d-flex justify-content-center p-0">
+                    <div class="row w-100">
+                        <div class="col-3 d-flex justify-content-start">
+                            <button class="btn d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasResponsive" aria-controls="offcanvasResponsive">
+                                <i class="bi bi-list"></i>
+                            </button>
+                        </div>
+                        <div class="col-6 d-flex justify-content-center">
+                            <a class="navbar-brand d-flex align-items-center m-0" href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='images/favicon.ico/') }}" alt="logo">&ensp;YouTalk</a>
+                        </div>
+                        <div class="col-3 d-lg-none d-flex justify-content-end">
+                            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                <i class="bi bi-person-circle"></i>
+                            </button>                    
+                        </div>
+                        <div class="col-lg-3 d-flex justify-content-end">
+                            <div class="collapse navbar-collapse flex-grow-0" id="navbarSupportedContent">
+                                <ul class="navbar-nav mb-2 mb-lg-0">
+                                    {% if not current_user.is_authenticated %}
+                                        <li class="nav-item">
+                                            <a class="nav-link text-end {% block login_active %}{%endblock%}" href="{{ url_for('login') }}">Log in</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link text-end {% block register_active %}{%endblock%}" href="{{ url_for('register') }}">Sign up</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="nav-item">
+                                            <p class="nav-link text-end m-0" id="userinfo">
+                                                {% if current_user.type == "Listener" %}
+                                                    <span><i class="bi bi-headphones" data-bs-toggle="tooltip" data-bs-title="Listener" data-bs-placement="bottom"></i>&ensp;</span>
+                                                {% elif current_user.type == "Creator" %}
+                                                    <span><i class="bi bi-mic-fill" data-bs-toggle="tooltip" data-bs-title="Creator" data-bs-placement="bottom"></i>&ensp;</span>
+                                                {% endif %}
+                                                <span data-bs-toggle="tooltip" data-bs-title="{{ current_user.name |e }} {{ current_user.surname |e }}" data-bs-placement="bottom">@{{ current_user.username |e }}</span>
+                                            </p>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link text-end" href="{{ url_for('logout') }}">
+                                                <i class="bi bi-box-arrow-right"></i> Log out
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </nav>
+        </header>
+        <section class="row h-100 m-0">            
+            <aside class="col-lg-2 mh-100 py-lg-5 shadow">
+                <div class="offcanvas-lg offcanvas-start h-100" tabindex="-1" id="offcanvasResponsive" aria-labelledby="offcanvasResponsiveLabel">
+                    <div class="offcanvas-header">
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasResponsive" aria-label="Close" id="closeoffcanvasbtn"></button>
+                    </div>
+                    <div class="offcanvas-body h-100">
+                        <div class="list-group w-100 h-100">
+                            <a href="{{ url_for('home') }}" class="list-group-item list-group-item-action {% if session['url'] == '/' %}active{% endif %}">
+                                <i class="bi bi-house-door{% if session['url'] == '/' %}-fill{% endif %}"></i>&ensp;Home
+                            </a>
+                            <button class="list-group-item list-group-item-action {% if 'explore' in session['url'] %}active{% endif %}" data-bs-toggle="collapse" data-bs-target="#collapseCategories" type="button" aria-expanded="false" aria-controls="collapseCategories">
+                                <i class="bi bi-compass{% if 'explore' in session['url'] %}-fill{% endif %}"></i>&ensp;Explore
+                            </button>
+                            <div class="collapse list-group {% if 'explore' in session['url'] %}show{% endif %} h-50 overflow-x-hidden overflow-y-auto" id="collapseCategories">
+                                <a href="{{ url_for('explore', category='arts-crafts') }}" class="list-group-item list-group-item-action {% if 'arts-crafts' in session['url'] %}active{% endif %}">&ensp;<i class="bi bi-palette{% if 'arts-crafts' in session['url'] %}-fill{% endif %}"></i>&ensp;Arts & Crafts</a>
+                                <a href="{{ url_for('explore', category='audiobooks') }}" class="list-group-item list-group-item-action {% if 'audiobooks' in session['url'] %}active{% endif %}">&ensp;<i class="bi bi-book{% if 'audiobooks' in session['url'] %}-fill{% endif %}"></i>&ensp;Audiobooks</a>
+                                <a href="{{ url_for('explore', category='cooking') }}" class="list-group-item list-group-item-action {% if 'cooking' in session['url'] %}active{% endif %}">&ensp;<i class="bi bi-egg-fried"></i>&ensp;Cooking</a>
+                                <a href="{{ url_for('explore', category='education') }}" class="list-group-item list-group-item-action {% if 'education' in session['url'] %}active{% endif %}">&ensp;<i class="bi bi-mortarboard{% if 'education' in session['url'] %}-fill{% endif %}"></i>&ensp;Education</a>
+                                <a href="{{ url_for('explore', category='economy-finance') }}" class="list-group-item list-group-item-action {% if 'economy-finance' in session['url'] %}active{% endif %}">&ensp;<i class="bi bi-graph-up-arrow"></i>&ensp;Economy & Finance</a>
+                                <a href="{{ url_for('explore', category='games-videogames') }}" class="list-group-item list-group-item-action {% if 'games-videogames' in session['url'] %}active{% endif %}">&ensp;<i class="bi bi-dpad{% if 'games-videogames' in session['url'] %}-fill{% endif %}"></i>&ensp;Games & Videogames</a>
+                                <a href="{{ url_for('explore', category='health-fitness') }}" class="list-group-item list-group-item-action {% if 'health-fitness' in session['url'] %}active{% endif %}">&ensp;<i class="bi bi-heart-pulse{% if 'health-fitness' in session['url'] %}-fill{% endif %}"></i>&ensp;Health & Fitness</a>
+                                <a href="{{ url_for('explore', category='movies-entertainment') }}" class="list-group-item list-group-item-action {% if 'movies-entertainment' in session['url'] %}active{% endif %}">&ensp;<i class="bi bi-camera-reels{% if 'movies-entertainment' in session['url'] %}-fill{% endif %}"></i>&ensp;Movies & Entertainment</a>
+                                <a href="{{ url_for('explore', category='music') }}" class="list-group-item list-group-item-action {% if 'music' in session['url'] %}active{% endif %}">&ensp;<i class="bi bi-music-note-beamed"></i>&ensp;Music</a>
+                                <a href="{{ url_for('explore', category='news') }}" class="list-group-item list-group-item-action {% if 'news' in session['url'] %}active{% endif %}">&ensp;<i class="bi bi-broadcast"></i>&ensp;News</a>
+                                <a href="{{ url_for('explore', category='science-technology') }}" class="list-group-item list-group-item-action {% if 'science-technology' in session['url'] %}active{% endif %}">&ensp;<i class="bi bi-rocket-takeoff{% if 'science-technology' in session['url'] %}-fill{% endif %}"></i>&ensp;Science & Technology</a>
+                                <a href="{{ url_for('explore', category='sport') }}" class="list-group-item list-group-item-action {% if 'sport' in session['url'] %}active{% endif %}">&ensp;<i class="bi bi-trophy{% if 'sport' in session['url'] %}-fill{% endif %}"></i>&ensp;Sport</a>
+                                <a href="{{ url_for('explore', category='travelling') }}" class="list-group-item list-group-item-action {% if 'travelling' in session['url'] %}active{% endif %}">&ensp;<i class="bi bi-signpost-2{% if 'travelling' in session['url'] %}-fill{% endif %}"></i>&ensp;Travelling</a>
+                                <a href="{{ url_for('explore', category='trending-topics') }}" class="list-group-item list-group-item-action {% if 'trending-topics' in session['url'] %}active{% endif %}">&ensp;<i class="bi bi-fire"></i>&ensp;Trending Topics</a>
+                            </div>
+                            <a href="{{ url_for('following') }}" class="list-group-item list-group-item-action {% if session['url'] == '/following' %}active{% endif %}">
+                                <i class="bi bi-collection-play{% if session['url'] == '/following' %}-fill{% endif %}"></i>&ensp;Following
+                            </a>
+                            <a href="{{ url_for('uploads') }}" class="list-group-item list-group-item-action {% if session['url'] == '/uploads' %}active{% endif %}">
+                                <i class="bi bi-folder{% if session['url'] == '/uploads' %}-fill{% endif %}"></i>&ensp;Uploads
+                            </a>
+                            <a href="{{ url_for('create_series') }}" class="list-group-item list-group-item-action {% if session['url'] == '/create-series' %}active{% endif %}">
+                                <i class="bi bi-plus-circle{% if session['url'] == '/create-series' %}-fill{% endif %}"></i>&ensp;Create
+                            </a>
+                            </div>
+                    </div>
+                </div>
+            </aside>
+            <main class="col-lg-10 h-100 overflow-x-hidden overflow-y-auto">
+                {% if get_flashed_messages() %}
+                    <section class="row justify-content-center pt-5">
+                        <div class="col-sm-10 col-xl-8">
+                            {{ render_messages(dismissible=True, dismiss_animate=True) }}
+                        </div>
+                    </section>
+                {% endif %}
+                {% block content %}{% endblock %}
+            </main>        
+        </section>
+    </body>
+</html>

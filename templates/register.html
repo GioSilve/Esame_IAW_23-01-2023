@@ -1,0 +1,20 @@
+{% from 'bootstrap5/form.html' import render_form_row, render_field %}
+{% extends "base.html" %}
+{% block title %}| Sign Up{% endblock %}
+{% block register_active %}active{%endblock%}
+{% block content %}
+<section class="row justify-content-center py-5">
+    <div class="col-sm-10 col-xl-8">
+        <p>Create your account to get started!</p>            
+        <form method="POST" action="{{ url_for('register') }}" id="register_form">    
+            {{ form.hidden_tag() }}
+            {{ render_form_row([form.name, form.surname], col_class_default='col-md-6') }}
+            {{ render_field(form.username) }}
+            {{ render_form_row([form.password, form.confirm], col_class_default='col-md-6') }}
+            <p>You can be either a <i data-bs-toggle="tooltip" data-bs-title="Listeners can play episodes, follow series and leave comments!">listener</i> or a <i data-bs-toggle="tooltip" data-bs-title="Creators can also upload and edit series and episodes!">creator</i>.</p>
+            {{ render_field(form.type, class="form-check-inline") }}
+            {{ render_field(form.submit) }}
+        </form>
+    </div>
+</section>
+{% endblock %}

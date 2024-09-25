@@ -1,0 +1,18 @@
+{% from 'bootstrap5/form.html' import render_field %}
+{% extends "base.html" %}
+{% block title %}| Log In{% endblock %}
+{% block login_active %}active{%endblock%}
+{% block content %}
+<section class="row justify-content-center py-5">
+    <div class="col-sm-10 col-xl-8">
+        <p>Log in with your account!</p>
+        <p>Don't have one yet? Create one <a href="{{ url_for('register') }}">here</a></p>            
+        <form method="POST" action="{{ url_for('login') }}" id="login_form">    
+            {{ form.hidden_tag() }}
+            {{ render_field(form.username) }}
+            {{ render_field(form.password) }}
+            {{ render_field(form.submit) }}
+        </form>
+    </div>
+</section>
+{% endblock %}

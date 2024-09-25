@@ -1,0 +1,20 @@
+{% from 'bootstrap5/form.html' import render_form_row, render_field %}
+{% extends "base.html" %}
+{% block title %}| Upload Episode{% endblock %}
+{% block content %}
+<section class="row justify-content-center py-5">
+    <div class="col-sm-10 col-xl-8">
+        <p>Fill in this form to upload a podcast episode to:<br><i>{{ series.title |e }}</i></p>            
+        <form method="POST" action="{{ url_for('upload_episode', series_id=series.series_id) }}" id=" upload_episode_form" enctype="multipart/form-data">    
+            {{ form.hidden_tag() }}
+            {{ render_field(form.title) }}
+            {{ render_field(form.description) }}
+            {{ render_form_row([form.date, form.audiofile], col_class_default='col-md-6') }}
+            <div class="d-flex justify-content-evenly">
+                {{ render_field(form.submit_close) }}
+                {{ render_field(form.submit_addep) }}
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

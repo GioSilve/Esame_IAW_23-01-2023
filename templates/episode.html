@@ -1,0 +1,154 @@
+{% from 'bootstrap5/form.html' import render_field, render_form_row %}
+{% extends "base.html" %}
+{% block title %}| {{e.title}}{% endblock %}
+{% block content %}
+<section class="row justify-content-center py-5">
+    <div class="col-sm-10">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <h6 class="d-inline-flex align-items-center m-0">{{ s.title |e }}</h6>
+                <span class="text-muted">
+                    <a href="{{ url_for('explore', category=s.category) }}" class="tag-link"><i class="bi bi-tag"></i>&nbsp;{{ s.category }}</a>
+                    {% if not current_user.username == s.username %}
+                        <a href="{{ url_for('follow_series', series_id=s.series_id) }}" class="btn btn-primary ms-2">{% if followed %}Unfollow{% else %}Follow{% endif %}</a>
+                    {% endif %}
+                </span>
+            </div>
+            <div class="card-body pb-0">
+                <div class="d-flex justify-content-between">
+                    <h4 class="card-title m-0 pb-2">{{ e.title |e }}</h4>
+                    {% if current_user.username == s.username %}
+                        <ul class="nav justify-content-end">
+                            <li class="nav-item d-flex align-items-center">
+                                <a class="nav-link" href="#edit-episode-{{ e.episode_id }}" data-bs-toggle="modal"><i class="bi bi-pencil"></i></a>
+                            </li>
+                            <li class="nav-item d-flex align-items-center">
+                                <a class="nav-link" href="#delete-episode-{{ e.episode_id }}" data-bs-toggle="modal"><i class="bi bi-trash3"></i></a>
+                            </li>
+                        </ul>
+                        <div class="modal fade" id="edit-episode-{{ e.episode_id }}" tabindex="-1" aria-labelledby="edit-episode-{{ e.episode_id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content">
+                                    <form method="POST" action="{{ url_for('edit_episode', episode_id=e.episode_id) }}" id="edit_episode_form" enctype="multipart/form-data">    
+                                        {{ episode_form.hidden_tag() }}
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5">"{{ e.title |e }}"</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="pb-2">Write here to edit your episode.</div>
+                                            {{ render_field(episode_form.title) }}
+                                            {{ render_field(episode_form.description) }}
+                                            {{ render_form_row([episode_form.date, episode_form.audiofile], col_class_default='col-md-6') }}
+                                        </div>
+                                        <div class="modal-footer justify-content-around">
+                                            <button type="submit" class="btn btn-primary" id="submit" name="submit"  value="Send">Save changes</button>
+                                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Go back</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="delete-episode-{{ e.episode_id }}" tabindex="-1" aria-labelledby="delete-episode-{{ e.episode_id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5">{{ e.title |e }}</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <span>You're about to delete this podcast episode, do you want to proceed?</span>
+                                    </div>
+                                    <div class="modal-footer justify-content-around">
+                                        <a href="{{ url_for('delete_episode', episode_id=e.episode_id) }}" class="btn btn-danger">Confirm</a>
+                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Go back</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                <h6 class="card-subtitle text-muted d-flex justify-content-between m-0 py-1">
+                    <span>{{ e.date }}</span>
+                    <span>@{{ s.username |e }}</span>
+                </h6>
+                <p class="card-text pt-2">{{ e.description |e }}</p>
+                {% if current_user.is_authenticated %}
+                    <audio src="{{ url_for('static', filename='audiofiles/episodes/' + e.audiofile) |e }}" controls class="w-100"></audio>                        
+                    <h6 class="card-subtitle m-0 pt-5 pb-3">Comments</h6>
+                    <form class="row" method="POST" action="{{ url_for('episode', episode_id=e.episode_id) }}" id="add_comment_form">    
+                        {{ comment_form.hidden_tag() }}
+                        <div class="col-10 col-sm-11">
+                            {{ render_field(comment_form.text, form_type="inline") }}
+                        </div>
+                        <div class="col-2 col-sm-1 d-flex align-items-center mb-3 ps-0">
+                            <button type="submit" class="btn border rounded" name="submit"  value="Send" id="sendCommentBtn"><i class="bi bi-send"></i></button>
+                        </div>
+                    </form>
+                {% else %}
+                    <span class="text-muted"><i class="bi bi-exclamation-triangle"></i>&nbsp;Log in to listen to this episode and to leave a comment!</span>
+                    <h6 class="card-subtitle m-0 pt-5 pb-3">Comments</h6>
+                {% endif %}
+            </div>              
+              <ul class="list-group list-group-flush">
+                {% for c in comments %}
+                    <li class="list-group-item d-flex justify-content-between py-3">
+                        <div>
+                            <h6 class="card-subtitle text-muted">@{{ c.username |e }}</h6>
+                            <p class="card-text pt-2">{{ c.text |e }}</p>
+                        </div>
+                        {% if current_user.username == c.username %}
+                            <ul class="nav nav-fill">
+                                <li class="nav-item d-flex align-items-center">
+                                    <a class="nav-link" href="#edit-comment-{{ c.comment_id }}" data-bs-toggle="modal"><i class="bi bi-pencil"></i></a>
+                                </li>
+                                <li class="nav-item d-flex align-items-center">
+                                    <a class="nav-link" href="#delete-comment-{{ c.comment_id }}" data-bs-toggle="modal"><i class="bi bi-trash3"></i></a>
+                                </li>
+                            </ul>
+                            <div class="modal fade" id="edit-comment-{{ c.comment_id }}" tabindex="-1" aria-labelledby="edit-comment-{{ c.comment_id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <form method="POST" action="{{ url_for('edit_comment', comment_id=c.comment_id) }}" id="edit_comment_form">    
+                                            {{ comment_form.hidden_tag() }}
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5">"{{ c.text |e }}"</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="pb-2">Write here to edit your comment.</div>
+                                                {{ render_field(comment_form.text, form_type="inline") }}
+                                            </div>
+                                            <div class="modal-footer justify-content-around">
+                                                <button type="submit" class="btn btn-primary" id="submit" name="submit"  value="Send">Save changes</button>
+                                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Go back</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal fade" id="delete-comment-{{ c.comment_id }}" tabindex="-1" aria-labelledby="delete-comment-{{ c.comment_id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5">"{{ c.text |e }}"</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <span>You're about to delete this comment, do you want to proceed?</span>
+                                        </div>
+                                        <div class="modal-footer justify-content-around">
+                                            <a href="{{ url_for('delete_comment', comment_id=c.comment_id) }}" class="btn btn-danger">Confirm</a>
+                                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Go back</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+              </ul>
+        </div>
+    </div>
+</section>
+{% endblock %}

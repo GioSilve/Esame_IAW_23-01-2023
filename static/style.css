@@ -1,0 +1,80 @@
+body {
+    height: 100vh;
+    flex-direction: column;
+    font-family: 'Nunito', sans-serif;
+}
+
+nav {
+    box-shadow: 0 5px 10px rgb(0 0 0 / 12%);
+}
+
+body > section {
+    padding-top: 58px;
+}
+
+main {
+    background-color: #e9eaee;
+}
+
+aside, nav, #offcanvasResponsive {
+    background-color: #27292a;
+}
+
+aside .list-group-item, .navbar-brand, aside .nav-link, nav .nav-link, .navbar-toggler, #userinfo, #userinfo:hover, button.d-lg-none, #closeoffcanvasbtn {
+    color: white !important;
+    background-color: transparent !important;
+    border: none;
+}
+
+aside .list-group-item:hover, aside .list-group-item.active, .navbar-brand:hover, aside .nav-link:hover, aside .nav-link.active, nav .nav-link:hover, nav .nav-link.active, .navbar-toggler:hover, button.d-lg-none:hover, #closeoffcanvasbtn:hover {
+    color: #e5202b !important;
+    background-color: transparent !important;
+    transition: 300ms;
+}
+
+aside button:focus {
+    color: white !important;
+    background-color: transparent !important;
+}
+
+main .nav-link, main .nav-link:focus {
+    color: #e5202b;
+}
+
+main .nav-link:hover {
+    color: #e5202b;
+    transform: scale(1.1);
+    transition: 100ms;
+}
+
+#sendCommentBtn:hover {
+    color: #e5202b;
+    border-color: #e5202b !important;
+}
+
+.btn-primary {
+    background-color: white;
+    border-color: #e5202b;
+    color: #e5202b;
+}
+
+.btn-primary:hover {
+    background-color: #e5202b;
+    border-color: #e5202b;
+    color: white;
+    transition: 300ms;
+}
+
+.card {
+    box-shadow: 0 5px 10px rgb(0 0 0 / 12%);
+}
+
+.tag-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.tag-link:hover {
+    color: black;
+    transition: 300ms;
+}
