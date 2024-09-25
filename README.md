@@ -1,4 +1,4 @@
-Per lanciare l'applicazione utilizzare "flask run".
+Per lanciare l'applicazione attivare il virtual environment ed utilizzare "flask run".
 Nella cartella "static" sono presenti sottocartelle "audiofiles" ed "images", che contengono rispettivamente
 i file audio degli episodi e le immagini delle serie di episodi. Sono già presenti due serie contenenti due episodi ciascuna,
 create da due diversi account di tipo Creator. È inoltre presente un terzo account di tipo Listener.
